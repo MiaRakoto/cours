@@ -5,7 +5,10 @@ import { User } from './entities/user.entity';
 
 @Injectable()
 export class UsersService {
-  [x: string]: any;
+
+  // [x: string]: any;
+
+
   constructor(
     @InjectRepository(User) // Injection de dépendance de l'entité User
     private userRepository: Repository<User>,

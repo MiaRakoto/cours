@@ -4,7 +4,7 @@ import { CreateLoginDto } from './dto/create-login.dto';
 import { UpdateLoginDto } from './dto/update-login.dto';
 import * as bcrypt from "bcrypt"
 
-import { UsersService } from 'src/user/user.service';
+import { UsersService } from '../user/user.service';
 // import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 
