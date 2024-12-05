@@ -1,107 +1,100 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
+import { Response } from 'express';
+import { JwtAuthGuard } from 'src/jwt-auth.guard';
+import { CompteService } from './compte.service';
 import { CreateCompteDto } from './dto/create-compte.dto';
 import { UpdateCompteDto } from './dto/update-compte.dto';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Compte } from './entities/compte.entity';
-import { Repository } from 'typeorm';
 
-@Injectable()
-export class CompteService {
+@Controller('compte')
+@UseGuards(JwtAuthGuard)
+export class CompteController {
+  constructor(private readonly compteService: CompteService) {}
 
-  constructor(
-    @InjectRepository(Compte)
-    private compteRepository: Repository<Compte>
-  ) {
-
-  }
-
-  async create(createCompteDto: CreateCompteDto) {
+  @Post()
+  async create(@Body() createCompteDto: CreateCompteDto, @Res() res: Response) {
     try {
-      const newCompte = await this.compteRepository.create(createCompteDto)
+      const data = await this.compteService.create(createCompteDto);
 
-      return await this.compteRepository.save(newCompte)
-
-
-    } catch (error) {
-      throw new Error("Verify your input")
+      res.status(200).json({
+        status: true,
+        data,
+      });
+    } catch (err) {
+      res.status(501).json({
+        status: false,
+        err,
+      });
     }
-
   }
 
-  async shareCompte(compteId, idUser: number) {
+  @Post('/share/:compteId')
+  async shareCompte(
+    @Param('compteId') compteId,
+    @Body('idUser') idUser: number,
+    @Res() res: Response,
+  ) {
+    try {
+      const data = await this.compteService.shareCompte(compteId, idUser);
 
-    const compte = await this.findOne(compteId)
-
-    // const addCollab = await this.compteRepository.update(compteId, {})
-
-    return compte.collab
-  }
-
-
-  async findByUserId(userId: number): Promise<Compte[]> {
-
-    const comptes = await this.compteRepository.find({
-      where: {
-        user: { id: userId }
-      },
-      relations: ["user"]
-    })
-
-    if (!comptes || comptes.length === 0) {
-      throw new Error("compte not found | the user have no compte")
+      res.status(200).json({
+        status: true,
+        data,
+      });
+    } catch (e) {
+      res.status(200).json({
+        status: true,
+        data: e,
+      });
     }
-
-    return comptes;
-
-
   }
 
+  @Get('/user/:userId')
+  async findByUserId(@Param('userId') userId, @Res() res: Response) {
+    try {
+      const data = await this.compteService.findByUserId(userId);
 
+      res.status(200).json({
+        status: true,
+        data,
+      });
+    } catch (err) {
+      res.status(501).json({
+        status: false,
+        err,
+      });
+    }
+  }
 
-
+  @Get()
   findAll() {
-    return `This action returns all compte`;
+    return this.compteService.findAll();
   }
 
-  async findOne(id: number) {
-    return await this.compteRepository.findOne({
-      where: {
-        idCompte: id
-      },
-      relations: ["depenses", "revenus", "user", "collab"]
-    });
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.compteService.findOne(+id);
   }
 
-  async update(id: number, updateCompteDto: UpdateCompteDto) {
-    const compte = await this.compteRepository.update(id, updateCompteDto)
-
-    return await this.findOne(id)
-
+  @Patch(':id')
+  async update(
+    @Param('id') id: string,
+    @Body() updateCompteDto: UpdateCompteDto,
+  ) {
+    return await this.compteService.update(+id, updateCompteDto);
   }
 
-
-  async upgradeSolde(id: number, montantRevenu: number) {
-
-    const compte = await this.findOne(id)
-
-    const newSolde = compte.solde + montantRevenu
-
-    await this.update(id, { solde: newSolde })
-
-  }
-
-
-  async degradeSolde(id: number, montantDepense: number) {
-
-    const compte = await this.findOne(id)
-
-    const newSolde = compte.solde - montantDepense
-
-    await this.update(id, { solde: newSolde })
-
-  }
-
-  async remove(id: number) {
-    await this.compteRepository.delete(id);
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.compteService.remove(+id);
   }
 }
