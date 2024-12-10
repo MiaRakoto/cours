@@ -1,18 +1,17 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { UsersModule } from './user/user.module';
-import { User } from './user/entities/user.entity';
-import { LoginModule } from './login/login.module';
 import { JwtModule } from '@nestjs/jwt';
-import { RevenuModule } from './revenu/revenu.module';
-import { Revenu } from './revenu/entities/revenu.entity';
-// import { ExpenseModule } from './expense/expense.module';
-// import { AccountModule } from './account/account.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { CompteModule } from './compte/compte.module';
+import { Collaboration } from './compte/entities/collab.entity';
+import { Compte } from './compte/entities/compte.entity';
 import { DepenseModule } from './depense/depense.module';
 import { Depense } from './depense/entities/depense.entity';
-import { CompteModule } from './compte/compte.module';
-import { Compte } from './compte/entities/compte.entity';
+import { LoginModule } from './login/login.module';
+import { Revenu } from './revenu/entities/revenu.entity';
+import { RevenuModule } from './revenu/revenu.module';
+import { User } from './user/entities/user.entity';
+import { UsersModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -26,7 +25,6 @@ import { Compte } from './compte/entities/compte.entity';
       signOptions: { expiresIn: '1h' },
     }),
 
-
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST,
@@ -34,8 +32,9 @@ import { Compte } from './compte/entities/compte.entity';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
-      entities: [User, Revenu, Depense, Compte],
-      synchronize: true,
+      entities: [User, Revenu, Depense, Compte, Collaboration],
+      synchronize: false,
+      logging: true,
     }),
 
     UsersModule,
@@ -43,10 +42,8 @@ import { Compte } from './compte/entities/compte.entity';
     RevenuModule,
     DepenseModule,
     CompteModule,
-    // ExpenseModule,
-    // AccountModule,
   ],
   controllers: [],
   providers: [],
 })
-export class AppModule { }
+export class AppModule {}

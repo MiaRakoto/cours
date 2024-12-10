@@ -1,7 +1,15 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToMany, JoinTable } from 'typeorm';
-import { Revenu } from 'src/revenu/entities/revenu.entity';
-import { Depense } from 'src/depense/entities/depense.entity';
+import { Collaboration } from 'src/compte/entities/collab.entity';
 import { Compte } from 'src/compte/entities/compte.entity';
+import { Depense } from 'src/depense/entities/depense.entity';
+import { Revenu } from 'src/revenu/entities/revenu.entity';
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class User {
@@ -23,10 +31,13 @@ export class User {
   @OneToMany(() => Depense, (depense) => depense.user)
   depensesPerso: Depense[];
 
-  @OneToMany(() => Compte, compte => compte.user)
+  @OneToMany(() => Compte, (compte) => compte.user)
   comptes: Compte[];
 
-  @ManyToMany(() => Compte, compte => compte.collab)
-  @JoinTable({ name: "collaboration" })
+  @ManyToMany(() => Compte, (compte) => compte.collab)
+  @JoinTable({ name: 'collaboration' })
   comptePartage: Compte[];
+
+  @OneToMany(() => Collaboration, (collaboration) => collaboration.user)
+  collaborations: Collaboration[];
 }

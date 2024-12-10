@@ -1,18 +1,16 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { RevenuService } from './revenu.service';
-import { RevenuController } from './revenu.controller';
-import { Revenu } from './entities/revenu.entity';
-import { User } from '../user/entities/user.entity';
-import { Compte } from 'src/compte/entities/compte.entity';
 import { CompteService } from 'src/compte/compte.service';
+import { Compte } from 'src/compte/entities/compte.entity';
+import { User } from 'src/user/entities/user.entity';
+import { Revenu } from './entities/revenu.entity';
+import { RevenuController } from './revenu.controller';
+import { RevenuService } from './revenu.service';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Revenu, Compte]),
-  ],
+  imports: [TypeOrmModule.forFeature([Revenu, Compte, User])],
   controllers: [RevenuController],
   providers: [RevenuService, CompteService],
-  exports: [RevenuService]
+  exports: [RevenuService],
 })
-export class RevenuModule { }
+export class RevenuModule {}
